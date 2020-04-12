@@ -1,0 +1,15 @@
+game:
+gameID-unique primary
+players-The number of players
+hands- one to many relationship with the hand table
+winner- who won
+duals- how many duals took place
+rounds- how many rounds
+
+hand:
+handID- unique primary
+player-which players deck
+strength- strength of hand
+numAce- Ammount of aces in the hand
+
+
