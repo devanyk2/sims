@@ -15,70 +15,79 @@
 #define BUFFLEN 1024
 
 /* Prototypes */
-int display(int board[LENGTH][WIDTH]);
-int update(int board[LENGTH][WIDTH]);
+int display(int **boardp);
+int update(int **boardp);
 int survive(int nb[3][3]);
-
+void printHood(int nb[3][3]);
 
 int main(){
-	WIDTH = 20;
-	LENGTH = 20;
-	int board[LENGTH][WIDTH];
+	WIDTH = 5;
+	LENGTH = 5;
 	int status = 0;
 	FILE *fp;
 	char buffer [BUFFLEN];
 
 
 	/* get file */
-	fp = fopen("map.txt", "r");
+	fp = fopen("smallMap.txt", "r");
 	if(fp == NULL){
 		fprintf(stderr, "cannot read from file\n");
 		return -1;	
 	}
+	/* malloc board */
+	//TODO
+	int **arrPointer = malloc(LENGTH * sizeof(arrPointer));
+	for(int i = 0; i<LENGTH;i++){
+		arrPointer[i]= malloc(WIDTH*sizeof(*arrPointer[i]));
+	}
 
 	/* intialize State */
 	//TODO
-	int maxlen = 0;
 	int hIndex = 0;
-
 	while(hIndex < LENGTH){
 		if( fgets(buffer, BUFFLEN, fp) != buffer)
 		break;
 		
 		int index = 0;
-		int linelen = 0;
+		
 
-		while((buffer[index] != '\0') || (linelen < maxlen)){
-			linelen++;
-			if((buffer[index] != '1')||(buffer[index] != '0')){
-				board[hIndex][linelen] = 0;
+		while((buffer[index] != '\0') || (index < WIDTH)){
+			if((buffer[index] != '1')||(buffer[index] == '0')){
+				arrPointer[hIndex][index] = 0;
 			}
 			else{
-				board[hIndex][linelen] = 1;
+				arrPointer[hIndex][index] = 1;
 			}
-			linelen++;
+			index++;
+		}
+		if (index < WIDTH){
+			while(index < WIDTH){
+				arrPointer[hIndex][index] = 0;
+				index++;
+			}
 		}
 		hIndex++;
-	
-
 	}
-
-	/* malloc board */
-	//TODO
-	//*board = (int)malloc((LENGTH*WIDTH) * sizeof(int));
-
 	
-
 	/* begin run */
+	int count= 0;
 	while(status != -1){
-		status = display(board);
-		status = update(board);
+		printf("Year %d\n", count);
+		status = display(arrPointer);
+		status = update(arrPointer);
+		count++;
 	}
+
+	/* always gotta free */
+	for(int i = 0; i<LENGTH; i++){
+		free(arrPointer[i]);
+	}
+	free(arrPointer);
 	return 0;
 
 }
 /* Pints out board in a color coordinated fashion */
-int display(int board[LENGTH][WIDTH]){
+int display(int **board){
 	int l = LENGTH;
 	int w = WIDTH;	
 	
@@ -88,14 +97,18 @@ int display(int board[LENGTH][WIDTH]){
 			if(board[iterL][iterW] == 2){
 				board[iterL][iterW] = 1; // new children become adults, helps simul death+life
 			}
+			if(board[iterL][iterW] == 3){
+				board[iterL][iterW] = 5;
+			}
 			printf("%d",board[iterL][iterW]);
 		}
 		printf("\n");
 	}
+	printf("\n");
 	return 0;	
 }
 /* runs through and updates each cell */
-int update(int board[LENGTH][WIDTH]){
+int update(int **board){
 	int l = LENGTH;
 	int w = WIDTH;	
 	int nb[3][3];
@@ -175,7 +188,7 @@ int update(int board[LENGTH][WIDTH]){
 			}
 			else if(status == 0){
 				if( prev == 1){
-					board[iterL][iterW] = 5;	// Death age here
+					board[iterL][iterW] = 3;	// Death age here
 				}
 				else if((prev > 4) && (prev < 8)){
 					board[iterL][iterW] = prev+1;	//death aging
@@ -194,7 +207,7 @@ int survive(int nb[3][3]){
 
 	for (int iterL = 0; iterL < 3; iterL++){
 		for (int iterW = 0; iterW < 3; iterW++){
-			if(nb[iterL][iterW] == 1){
+			if((nb[iterL][iterW] == 1)||(nb[iterL][iterW] == 3)){
 				alive++;
 			}
 		}	
@@ -209,4 +222,18 @@ int survive(int nb[3][3]){
 		return 1;
 	}
 	return 1;
+}
+
+void printHood(int nb[3][3]){
+	int x = 0;
+	int y = 0;
+
+	while(x < 3){
+		while(y < 3){
+			printf("%d",nb[x][y]);
+			y++;
+		}
+		x++;
+		y = 0;
+	}
 }
