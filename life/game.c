@@ -17,7 +17,7 @@
 /* Prototypes */
 int display(int **boardp);
 int update(int **boardp);
-int survive(int nb[3][3]);
+int survive(int nb[3][3], int id);
 void printHood(int nb[3][3]);
 
 int main(){
@@ -117,6 +117,7 @@ int update(int **board){
 	for(int iterL = 0; iterL < l; iterL++){
 		for (int iterW = 0; iterW < w; iterW++){
 			int nBool[4] = {1,1,1,1};
+			int id = (l*iterL) + iterW+1; 
 			if(iterL == 0){
 				nBool[0] = 0; 	// No top row
 			}
@@ -136,6 +137,7 @@ int update(int **board){
 				nb[0][1] = board[iterL-1][iterW];
 				if(nBool[2]){
 					nb[0][0] = board[iterL-1][iterW-1];
+					nb[1][0] = board[iterL][iterW-1];
 				}
 				else{
 					nb[0][0] = '#';
@@ -144,6 +146,7 @@ int update(int **board){
 				}
 				if( nBool[3]){
 					nb[0][2] = board[iterL-1][iterW+1];
+					nb[1][2] = board[iterL][iterW+1];
 				}
 				else{
 					nb[0][2] = '#';
@@ -155,6 +158,7 @@ int update(int **board){
 				nb[2][1] = board[iterL+1][iterW];
 				if(nBool[2]){
 					nb[2][0] = board[iterL+1][iterW-1];
+					nb[1][0] = board[iterL][iterW-1];
 				}
 				else{
 					nb[0][0] = '#';
@@ -163,6 +167,7 @@ int update(int **board){
 				}
 				if( nBool[3]){
 					nb[2][2] = board[iterL+1][iterW+1];
+					nb[1][2] = board[iterL][iterW+1];
 				}
 				else{
 					nb[2][2] = '#';
@@ -170,13 +175,9 @@ int update(int **board){
 					nb[0][2] = '#';
 				}
 			}						// middle
-			nb[1][1] = board[iterL][iterW];
+			nb[1][1] = '#'; 
 
-
-			
-
-
-			int status = survive(nb);
+			int status = survive(nb, id);
 			int prev = board[iterL][iterW];
 			if(status == 1){
 				if (prev != 1){
@@ -201,9 +202,10 @@ int update(int **board){
 	}
 	return 0;
 }
-/* Survive, returns 1 if the cell lives and 0 if it dies */
-int survive(int nb[3][3]){
+/* Survive, returns 1 if the cell lives and 0 if it dies, -1 if no change */
+int survive(int nb[3][3], int id){
 	int alive = 0;
+	id = id;
 
 	for (int iterL = 0; iterL < 3; iterL++){
 		for (int iterW = 0; iterW < 3; iterW++){
@@ -221,7 +223,7 @@ int survive(int nb[3][3]){
 	else if(alive == 3){
 		return 1;
 	}
-	return 1;
+	return -1;
 }
 
 void printHood(int nb[3][3]){
