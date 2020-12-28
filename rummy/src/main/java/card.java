@@ -13,16 +13,16 @@ public class card{
 		this.value = value;
 		this.suit = suit;
 	}
-
+	/* Determines validity of input */
 	private String isInvalid(int value, String suit){
-		ArrayList<String> allowedString = new ArrayList<String>(Arrays.asList("s","c","d","h")); 
+		ArrayList<String> allowedString = new ArrayList<String>(Arrays.asList("s","c","d","h"));
 		if ((value < 0) || (value > 12)){
 			return "Invalid Number";
 		}
 		if (!(allowedString.contains(suit))){
-			return "Invalid Suit";
+			return "Invalid Suit ";
 		}
-		return null;
+		return null; 					
 	}
 
 }
